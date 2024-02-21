@@ -1,0 +1,104 @@
+public class Libro
+{
+    public string Titulo { get; set; }
+    public int Tipo { get; set; }
+    public decimal Precio { get; set; }
+}
+
+
+public class Cliente
+{
+    public string Nombre { get; set; }
+    public string Genero { get; set; }
+}
+
+
+public class Venta
+{
+    public Cliente Cliente { get; set; }
+    public Libro Libro { get; set; }
+    public int Cantidad { get; set; }
+
+    public decimal CalcularImporteBruto()
+    {
+        return Cantidad * Libro.Precio;
+    }
+
+    public decimal CalcularPorcentajeDescuento()
+    {
+        decimal porcentajeDescuento = 0;
+
+        if (Cantidad >= 1 && Cantidad <= 2)
+        {
+            porcentajeDescuento = (Libro.Tipo == 1) ? 0.05m : 
+                                  (Libro.Tipo == 2) ? 0.08m : 
+                                  (Libro.Tipo == 3) ? 0.09m : 0.02m;
+        }
+        else if (Cantidad >= 3 && Cantidad <= 6)
+        {
+            porcentajeDescuento = (Libro.Tipo == 1) ? 0.06m :
+                                  (Libro.Tipo == 2) ? 0.16m :
+                                  (Libro.Tipo == 3) ? 0.18m : 0.02m;
+        }
+        else if (Cantidad > 6)
+        {
+            porcentajeDescuento = (Libro.Tipo == 1) ? 0.08m :
+                                  (Libro.Tipo == 2) ? 0.32m :
+                                  (Libro.Tipo == 3) ? 0.36m : 0.04m;
+        }
+
+        return porcentajeDescuento;
+    }
+
+    public decimal CalcularMontoDescuento()
+    {
+        decimal importeBruto = CalcularImporteBruto();
+        decimal porcentajeDescuento = CalcularPorcentajeDescuento();
+
+        return importeBruto * porcentajeDescuento;
+    }
+
+    public decimal CalcularImporteNeto()
+    {
+        decimal importeBruto = CalcularImporteBruto();
+        decimal montoDescuento = CalcularMontoDescuento();
+
+        return importeBruto - montoDescuento;
+    }
+}
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        // Registro de libros
+        var libros = new List<Libro>
+        {
+            new Libro { Titulo = "Libro 1", Tipo = 1, Precio = 90.00m },
+            new Libro { Titulo = "Libro 2", Tipo = 2, Precio = 100.00m },
+            new Libro { Titulo = "Libro 3", Tipo = 3, Precio = 80.00m },
+            new Libro { Titulo = "Libro 4", Tipo = 4, Precio = 150.00m }
+        };
+
+        // Registro de clientes
+        var clientes = new List<Cliente>();
+
+        // Registro de ventas
+        var ventas = new List<Venta>();
+
+        // Ejemplo de registro de cliente
+        var cliente1 = new Cliente { Nombre = "Cliente 1", Genero = "Femenino" };
+        clientes.Add(cliente1);
+
+        // Ejemplo de registro de venta
+        var venta1 = new Venta { Cliente = cliente1, Libro = libros[0], Cantidad = 3 };
+        ventas.Add(venta1);
+
+        // Calcular importe neto de la venta
+        decimal importeNetoVenta1 = venta1.CalcularImporteNeto();
+
+        Console.WriteLine($"Importe neto de la venta: {importeNetoVenta1:C}");
+    }
+}
